@@ -7,10 +7,30 @@ import {
   StyleSheet,
 } from 'react-native';
 
+import { router } from 'expo-router';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
+
 export default function CadastroScreen() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+
+  const cadastrarUsuario = async () => {
+  try {
+    await createUserWithEmailAndPassword(
+      auth,
+      email,
+      senha
+    );
+
+    alert('Usuário cadastrado!');
+
+    router.push('/filmes');
+    } catch (error: any) {
+    alert(error.message);
+    }
+};
 
   return (
     <View style={styles.container}>
@@ -40,11 +60,14 @@ export default function CadastroScreen() {
         onChangeText={setSenha}
       />
 
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>
-          Cadastrar
-        </Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+    style={styles.button}
+    onPress={cadastrarUsuario}
+    >
+    <Text style={styles.buttonText}>
+        Cadastrar
+    </Text>
+    </TouchableOpacity>
     </View>
   );
 }
