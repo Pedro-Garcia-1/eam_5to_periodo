@@ -1,19 +1,52 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import { router } from 'expo-router';
 
-export default function HomeScreen() {
+
+export default function LoginScreen() {
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
         Sistema de Filmes
       </Text>
 
-      <Text style={styles.subtitle}>
-        Trabalho de Engenharia de Aplicações Móveis
-      </Text>
+      <TextInput
+        style={styles.input}
+        placeholder="E-mail"
+        value={email}
+        onChangeText={setEmail}
+      />
 
-      <Text>
-        Firebase + CRUD + Login
-      </Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Senha"
+        secureTextEntry
+        value={senha}
+        onChangeText={setSenha}
+      />
+
+      <TouchableOpacity style={styles.button}>
+        <Text style={styles.buttonText}>
+          Entrar
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => router.push('/cadastro')}
+      >
+        <Text style={styles.link}>
+          Criar conta
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -22,17 +55,39 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    padding: 20,
   },
 
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 20,
+    textAlign: 'center',
+    marginBottom: 30,
   },
 
-  subtitle: {
-    fontSize: 18,
-    marginBottom: 10,
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 15,
+  },
+
+  button: {
+    backgroundColor: '#2196F3',
+    padding: 15,
+    borderRadius: 8,
+  },
+
+  buttonText: {
+    color: 'white',
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+
+  link: {
+    textAlign: 'center',
+    marginTop: 15,
+    color: '#2196F3',
   },
 });
