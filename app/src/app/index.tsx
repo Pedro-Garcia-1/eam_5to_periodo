@@ -6,12 +6,31 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
 import { router } from 'expo-router';
 
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+
+  const fazerLogin = async () => {
+  try {
+    await signInWithEmailAndPassword(
+      auth,
+      email,
+      senha
+    );
+
+    alert('Login realizado!');
+
+    router.push('/filmes');
+  } catch (error: any) {
+    alert(error.message);
+  }
+  };
 
   return (
     <View style={styles.container}>
@@ -34,7 +53,10 @@ export default function LoginScreen() {
         onChangeText={setSenha}
       />
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={fazerLogin}
+      >
         <Text style={styles.buttonText}>
           Entrar
         </Text>
