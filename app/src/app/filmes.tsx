@@ -10,12 +10,14 @@ import {
 
 import { db } from '../firebase';
 import { useEffect } from 'react';
+import { router } from 'expo-router';
 
 import {
   collection,
   addDoc,
   getDocs,
   deleteDoc,
+  updateDoc,
   doc
 } from 'firebase/firestore';
 
@@ -23,6 +25,8 @@ import {
 
 export default function FilmesScreen() {
   const [titulo, setTitulo] = useState('');
+  const [editando, setEditando] = useState(false);
+  const [idEdicao, setIdEdicao] = useState('');
   const [filmes, setFilmes] = useState([
     { id: '1', titulo: 'Interestelar' },
     { id: '2', titulo: 'Batman' },
@@ -82,7 +86,34 @@ export default function FilmesScreen() {
   } catch (error: any) {
     alert(error.message);
   }
-};
+  };
+
+  const editarFilme = (filme: any) => {
+  setTitulo(filme.titulo);
+  setIdEdicao(filme.id);
+  setEditando(true);
+  };
+
+  const atualizarFilme = async () => {
+  try {
+    await updateDoc(
+      doc(db, 'filmes', idEdicao),
+      {
+        titulo
+      }
+    );
+
+    alert('Filme atualizado!');
+
+    setTitulo('');
+    setEditando(false);
+    setIdEdicao('');
+
+    await carregarFilmes();
+  } catch (error: any) {
+    alert(error.message);
+  }
+  };
 
   useEffect(() => {
   carregarFilmes();
@@ -103,10 +134,14 @@ export default function FilmesScreen() {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={adicionarFilme}
+        onPress={
+          editando
+            ? atualizarFilme
+            : adicionarFilme
+        }
       >
         <Text style={styles.buttonText}>
-          Adicionar
+          {editando ? 'Atualizar' : 'Adicionar'}
         </Text>
       </TouchableOpacity>
 
@@ -116,6 +151,15 @@ export default function FilmesScreen() {
         renderItem={({ item }) => (
         <View style={styles.card}>
           <Text>{item.titulo}</Text>
+
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() => editarFilme(item)}
+          >
+            <Text style={styles.buttonText}>
+              Editar
+            </Text>
+          </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.deleteButton}
@@ -128,6 +172,18 @@ export default function FilmesScreen() {
         </View>
       )}
       />
+      <View style={styles.menu}>
+      <TouchableOpacity style={styles.tabAtiva}>
+        <Text>Filmes</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.tab}
+        onPress={() => router.push('/perfil')}
+      >
+        <Text>Perfil</Text>
+      </TouchableOpacity>
+    </View>
     </View>
   );
 }
@@ -177,5 +233,26 @@ const styles = StyleSheet.create({
   padding: 10,
   borderRadius: 8,
   marginTop: 10,
-},
+  },
+  editButton: {
+  backgroundColor: '#FF9800',
+  padding: 10,
+  borderRadius: 8,
+  marginTop: 10,
+  },
+  menu: {
+  flexDirection: 'row',
+  justifyContent: 'space-around',
+  marginTop: 20,
+  },
+
+  tab: {
+    padding: 15,
+  },
+
+  tabAtiva: {
+    padding: 15,
+    backgroundColor: '#4CAF50',
+    borderRadius: 8,
+  },
 });
