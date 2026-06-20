@@ -8,6 +8,13 @@ import {
   StyleSheet,
 } from 'react-native';
 
+import { db } from '../firebase';
+
+import {
+  collection,
+  addDoc
+} from 'firebase/firestore';
+
 export default function FilmesScreen() {
   const [titulo, setTitulo] = useState('');
   const [filmes, setFilmes] = useState([
@@ -15,18 +22,24 @@ export default function FilmesScreen() {
     { id: '2', titulo: 'Batman' },
   ]);
 
-  const adicionarFilme = () => {
+    const adicionarFilme = async () => {
     if (!titulo) return;
 
-    setFilmes([
-      ...filmes,
-      {
-        id: Date.now().toString(),
-        titulo,
-      },
-    ]);
+    try {
+      await addDoc(
+        collection(db, 'filmes'),
+        {
+          titulo,
+          criadoEm: new Date()
+        }
+      );
 
-    setTitulo('');
+      alert('Filme salvo!');
+
+      setTitulo('');
+    } catch (error: any) {
+      alert(error.message);
+    }
   };
 
   return (
